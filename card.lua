@@ -1,3 +1,4 @@
+-- card.lua
 
 require "utils"
 require "vector"
@@ -13,9 +14,7 @@ CARD_STATE = {
 }
 
 
-function CardClass:new(suit, rank, visible, xPos, yPos)
-  local imagePath = "cards/" .. suit .. " " .. tostring(rank) .. ".png"
-  
+function CardClass:new(name, cost, power, effect, xPos, yPos)
   local card = {}
   local metadata = {__index = CardClass}
   setmetatable(card, metadata)
@@ -26,12 +25,12 @@ function CardClass:new(suit, rank, visible, xPos, yPos)
   card.mouseOver = false
   card.grabbable = true
   
-  card.suit = suit
-  card.rank = tonumber(rank)
-  card.visible = visible or false
+  card.name = name
+  card.cost = tonumber(cost)
+  card.power = tonumber(power)
+  card.effect = effect or " " -- If no effect, leave card blank
+  card.revealed = false
   
-  card.image = love.graphics.newImage(imagePath)
-  card.imageBack = love.graphics.newImage("cards/Card Back.png")
   return card
 end
 
@@ -40,31 +39,40 @@ function CardClass:update()
 end
 
 function CardClass:draw()
-  if self.visible then
-    love.graphics.draw(self.image, self.position.x, self.position.y)
+  -- Draw Card back
+  if not self.revealed then
+    love.graphics.setColor(DARK_GRAY)
+    love.graphics.rectangle("fill", self.position.x, self.position.y, CARD_WIDTH, CARD_HEIGHT)
+    love.graphics.setColor(WHITE)
+    love.graphics.print("Face Down", self.position.x + 10, self.position.y + 60)
+  -- If Card is revealed, draw actual Card
   else
-    love.graphics.draw(self.imageBack, self.position.x, self.position.y)
+    -- Card Border
+    love.graphics.setColor(WHITE)
+    love.graphics.rectangle("fill", self.position.x, self.position.y, CARD_WIDTH, CARD_HEIGHT)
+    love.graphics.setColor(BLACK)
+    love.graphics.rectangle("line", self.position.x, self.position.y, CARD_WIDTH, CARD_HEIGHT)
+    
+    -- Card Info
+    love.graphics.print(self.name, self.position.x + 10, self.position.y + 10)
+    love.graphics.print(self.cost .. " Cost", self.position.x + 10, self.position.y + 30)
+    love.graphics.print(self.power .. " Power", self.position.x + 10, self.position.y + 50)
+    love.graphics.print(self.effect, self.position.x + 10, self.position.y + 70)
   end
 end
 
 
+
+-- Reveal a card
+function CardClass:reveal()
+  self.revealed = true
+end
 
 -- Check whether the mouse is hovering over a Card. If it is, change its state to be recognized as a potential grabbable candidate
 function CardClass:checkForMouseOver(mousePos)
-  if self.state == CARD_STATE.GRABBED then return end -- Can't grab a card if already holding one
-  if not self.visible then return end -- Can't grab a card if it's face down
+  if self.state == CARD_STATE.GRABBED then return false end -- Can't grab a card if already holding one
   
   local isMouseOver = contains(self, mousePos)
   self.state = isMouseOver and CARD_STATE.MOUSE_OVER or CARD_STATE.IDLE
-end
-
--- Return red or black
-function CardClass:getColor()
-  if (self.suit == "Hearts" or self.suit == "Diamonds") then
-    return "red"
-  elseif (self.suit == "Clubs" or self.suit == "Spades") then
-    return "black"
-  else -- How would this happen??
-    return "ERROR"
-  end
+  return isMouseOver
 end

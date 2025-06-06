@@ -1,5 +1,8 @@
+-- grabber.lua
 
-require "pile"
+require "card"
+require "location"
+require "player"
 
 
 GrabberClass = {}
@@ -10,19 +13,14 @@ function GrabberClass:new()
   local metadata = {__index = GrabberClass}
   setmetatable(grabber, metadata)
   
-  grabber.cards = {}
-  grabber.originPile = nil
-  grabber.offset = nil
-  
-  --grabber.previousMousePos = nil
   grabber.currentMousePos = nil
   grabber.grabPos = nil
+  grabber.heldObject = nil
   
   return grabber
 end
 
-function GrabberClass:update()
-  --self.previousMousePos = self.currentMousePos
+function GrabberClass:update(cards, locations, player)
   self.currentMousePos = Vector(
     love.mouse.getX(), 
     love.mouse.getY()
@@ -30,66 +28,78 @@ function GrabberClass:update()
   
   -- Click
   if love.mouse.isDown(1) and self.grabPos == nil then
-    self:grab()
+    self:grab(cards)
   end
+  
   -- Release
   if not love.mouse.isDown(1) and self.grabPos ~= nil then
-    self:release()
+    self:release(locations, player)
   end
-end
-
-function GrabberClass:draw()
-  for i, card in ipairs(self.cards) do
-    card.position = self.currentMousePos - self.offset + Vector(0, (i - 1) * PILE_OFFSET)
-    card:draw()
-  end
-end
-
-
-
--- Grab a Card. If it's from a Pile, grab the entire Pile
-function GrabberClass:grab(card)
-  if not card then return end
-  if not card.grabbable then return end  -- No need to check if the card isn't grabbable (i.e. not top card of Talon)
   
-  local pile, index = getPileFrom(card)
-  if not pile then return end
-
-  self.cards = {}
-  for i = index, #pile.cards do
-    table.insert(self.cards, pile.cards[i])
+  -- Update held Card to follow
+  if self.heldObject and self.offset then
+    self.heldObject.position.x = self.currentMousePos.x - self.offset.x
+    self.heldObject.position.y = self.currentMousePos.y - self.offset.y
   end
-
-  for i = #pile.cards, index, -1 do
-    table.remove(pile.cards, i)
-  end
-
-  self.originPile = pile
-  self.grabPos = self.currentMousePos
-  self.offset = self.currentMousePos - card.position
 end
 
-function GrabberClass:release()
-  if #self.cards == 0 then return end
 
-  local grabbedCard = self.cards[1]
+-- Grab a Card
+function GrabberClass:grab(cards)
+  self.grabPos = self.currentMousePos
 
-  for _, pile in ipairs(cardTable) do
-    if contains(pile, self.currentMousePos) and pile:isLegalAction(grabbedCard) then
-      for _, card in ipairs(self.cards) do
-        pile:addCard(card)
-      end
-      self.originPile:revealCard()
-      self.cards = {}
-      self.originPile = nil
-      return
+  for _, card in ipairs(cards) do
+    if card:checkForMouseOver(self.currentMousePos) then
+      self.heldObject = card
+      card.state = CARD_STATE.GRABBED
+
+      -- Cards won't "snap" to mouse cursor, they are now dragged based on mouse pos
+      self.offset = {
+        x = self.currentMousePos.x - card.position.x,
+        y = self.currentMousePos.y - card.position.y
+      }
+      
+      -- If a Card isn't dragged to a proper location, snap it back to original location
+      self.originalCardPosition = {
+        x = card.position.x,
+        y = card.position.y
+      }
+      break
     end
   end
-  
-  -- Return to original pile if placed in an incorrect spot
-  for _, card in ipairs(self.cards) do
-    self.originPile:addCard(card)
+end
+
+-- Release a Card
+function GrabberClass:release(locations, player)
+  if not self.heldObject then self.grabPos = nil return end
+
+  local card = self.heldObject
+  local placed = false
+
+  for _, location in ipairs(locations) do
+    for i, slot in ipairs(location.visualUserSlots) do
+      local slotRect = {
+        position = Vector(slot.x, slot.y),
+        size = Vector(slot.width, slot.height)
+      }
+
+      if contains(slotRect, self.currentMousePos) and location.slots.user[i] == false then
+        local success = player:playCard(card, location, i)
+        if success then
+          placed = true
+          break
+        end
+      end
+    end
+    if placed then break end
   end
-  self.cards = {}
-  self.originPile = nil
+
+  if not placed and self.originalCardPosition then
+    card.position.x = self.originalCardPosition.x
+    card.position.y = self.originalCardPosition.y
+  end
+
+  card.state = CARD_STATE.IDLE
+  self.heldObject = nil
+  self.grabPos = nil
 end
