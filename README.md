@@ -1,38 +1,30 @@
-# solitaire
- Solitaire coded in lua.
+# Location Card Game
+ Card Game coded in lua.
  
  -- Programming Patterns & Design --
- This project seeks to implement fully developed solitaire gameplay.
- Basic solitaire gameplay is fully implemented, with one annoying issue where the card hitboxes to drag are based on the bottom of 
- the card, rather than the top -- e.g. Clicking a card on the bottom is somewhat precise, especially on the Falcon.
- Other than that, all parts of Solitaire are implemented (Tableau Piles, Foundation Piles, Deck, Falcon, dragging, win condition)
+ This project seeks to implement fully developed location-based card gameplay.
+ This took a while but card gameplay based on locations (just like Marvel Snap, hence the project name) has been implemented. It was fun to do this because I was able to get code snippets made from solitaire, like the cards and the grabbing, and got it to work here with (relative) ease. Making the cards have effects though is an entire other beast which I didn't end up implementing due to time restraints, but I plan to remedy and fix that later!
  
  The main programming pattern the game uses right now is a flyweight pattern, used to quickly handle the 52 cards' creation
  for a deck. Because there's a set, finite amount of cards in the game, I felt like it'd be appropriate when creating the cards to use the flyweight pattern, quickly making copies rather than making a unique Card object every time. This is because the card properties never change, e.g. suits or ranks, so there's no need to make them more complicated than a flyweight.
  
  I also use prototypes in basically every .lua with setmetatables, since it's the closest thing lua has to classes. It helps modulize and share logic between the game; this game would be a lot harder to make without prototypes.
  
+ I plan to use observers for when I make the cards get effects when played.
+ 
  
  -- Peer Feedback --
- Ronan Tsoi: Ronan helped a lot during discussion sections, not only given written feedback but also briefly examining and telling me how he implemented pile logic with cards. He also helped me refactor some of my grabbing code. He also helped me figure out how to add more comments and readability to my code, since it initially had very little comments.
- Cal Friedman: Cal was very helpful when reviewing my code and helped me figure out why my grabber code wasn't working in my first iteration (Telling me that the grabber logic didn't actually explicitly check each card in the update).
- Leo Assimes: Leo's code happened to have a lot of similarities in how we structured things, so we got to see each other's code and teach each other little ways to refactor our code. In particular, he helped me figure out why my deck wasn't spawning in.
- Suramya Shakya: Suramya helped me near the end of submission when I needed help figuring out why my pile logic wasn't working.
- Stanley Hung: While not in the class (He's my roommate), he helped playtest my game when it was done and help me with various nitpicks on what to change, e.g. the reset button overlapping with the Talon if you exhausted it and made the pile reach the end.
+ Ronan: Ronan helped me (again) with my code by giving feedback and looking through what I had at the end to review what I did right and wrong!
+ Josh: Josh and I talked about how to structure and make our code work, and the initial file preparation and function creation was from both of us talking and looking over each other's code to see if we agreed with it. We later showed each other our near final code to see if there was any advice we could give to each other.
+ Jason: Jason gave feedback on my code by showing redundant code and pointing out why my grabber function wasn't working (I forgot to call it).
  
  -- Known Issues --
- - Dragging cards can be a little annoying because the hitbox to grab cards is based bottom-up instead of top-down. Meaning, to grab the first card in a pile, you need to grab a sliver of the card hitbox at the bottom, rather than the entire visible first card.
-   - This is because of how I built the Card grabbing system. There's no easy fix to this that wouldn't require me to refactor the grabbing code, so for now, it is what it is.
-   - This is especially noticeable on the Talon, where grabbing the topmost card requires some precision to grab a sliver of it.
- - Occasionally, the Foundation Pile allows you to give an entire pile of Cards rather than one Card (which should always be impossible since a pile consists of different suits).
-   - This cannot happen consistently, which means the logic error must come from it not being checked every time. It's confusing, since the logic otherwise always works, e.g. never accepting the wrong suit of a Card.
+ - Card effects are not currently implemented. Oops!
+ - Card text flows off the screen of the cards. It's pretty ugly.
  
  -- Postmortem --
- After refactoring all of the code from the ground up because grabbing wasn't working, I initially had a lot of issues with how the game was working, but eventually it all started to come together and click near the end of development. Card games are one of my favorite genres of games, so it was fun to fully work and create the solitaire logic from the ground up, figuring out where things should go and why. I feel like I've successfully implemented all solitaire features -- at least the ones that I care to create, so no fancy win screen outside of a print for example. The only annoyance is how grabbing has a precise hitbox, something that still haunts me (even after refactoring the grabbing code, it's still wonky!) but I'm willing to call it done.
+ Getting this working felt like I was putting together a ton of different gears in a box, closing it, and then shaking it to see if any of them would magically click together in place. I made a lot of individual parts first and then slowly jumped around whenever I realized implementation would better fit in another file, or made iterable for a different purpose. This is very noticeable with my board.lua, which literally only exists to group together all three locations, and with hindsight could definitely just be removed entirely. Once the gears did start to click in place, it suddenly becomes a lot easier to get it all working together. Game Manager was weirdly the funnest part of the project; once I got cards, locations, grabbing and players working, all that was left was putting the game logic in place. It was fun to slowly make it feel like it was an actual game.
  
  -- Assets --
- Card sprites are from 'Free Playing Cards Pixelart Asset Pack', made by Elvgames.
- https://elvgames.itch.io/playing-cards-pixelart-asset-pack
- 
- Sound effects are from 'Board Game Pack', made by Kenney.
+ Sound effects are from 'Board Game Pack', made by Kenney. (They are not currently used)
  https://kenney.nl/assets/boardgame-pack

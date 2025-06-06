@@ -8,8 +8,6 @@ require "grabber"
 require "game_manager"
 
 
-local currentGameState == "title"
-
 function love.load()
   gameManager = GameManagerClass:new() 
 end
@@ -21,11 +19,7 @@ function love.update(dt)
 end
 
 function love.draw()
-  if currentGameState == "title" then
-    TitleScreen:draw()
-  elseif currentGameState == "game" then
-    gameManager:draw()
-  end
+  gameManager:draw()
 end
 
 function love.mousepressed(x, y, button)
