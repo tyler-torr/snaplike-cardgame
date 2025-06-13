@@ -22,7 +22,7 @@ function love.draw()
   gameManager:draw()
 end
 
-function love.mousepressed(x, y, button)w
+function love.mousepressed(x, y, button)
   if gameManager.mousepressed then
     gameManager:mousepressed(x, y, button)
   end

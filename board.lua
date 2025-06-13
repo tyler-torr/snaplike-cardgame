@@ -9,7 +9,7 @@ function BoardClass:new()
   local metadata = {__index = BoardClass}
   setmetatable(board, metadata)
   
-  board.locations = {}w
+  board.locations = {}
   
   for i = 1, NUM_LOCATIONS do
     local locationDistance = (i - 1) * BOARD_X_LOCATION_DISTANCE

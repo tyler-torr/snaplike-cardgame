@@ -17,7 +17,7 @@ LIGHT_BLUE = {0.2, 0.6, 1, 1}
 TINTED_RED = {0.6, 0.2, 0.2, 1} -- Enemy Location Border
 TINTED_BLUE = {0.2, 0.2, 0.6, 1} -- User Location Border
 TRANSPARENT_GRAY = {0.2, 0.2, 0.2, 0.5, 1}
-w
+
 -- Card Properties
 CARD_WIDTH = 75
 CARD_HEIGHT = 105

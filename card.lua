@@ -1,5 +1,5 @@
 -- card.lua
-w
+
 require "utils"
 require "vector"
 require "constants"

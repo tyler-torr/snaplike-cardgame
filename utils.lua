@@ -18,7 +18,7 @@ function loadCardsFromCSV(filePath)
         name = name,
         cost = tonumber(cost),
         power = tonumber(power),
-        effect = effect:gsub('^"(.-)"$', '%1')w
+        effect = effect:gsub('^"(.-)"$', '%1')
       })
     end
   end

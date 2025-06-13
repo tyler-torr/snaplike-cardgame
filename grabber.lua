@@ -102,4 +102,4 @@ function GrabberClass:release(locations, player)
   card.state = CARD_STATE.IDLE
   self.heldObject = nil
   self.grabPos = nil
-endw
+end

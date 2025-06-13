@@ -5,7 +5,7 @@ require "card"
 
 PlayerClass = {}
 
-w
+
 -- Create either a User Player or the Enemy Player
 function PlayerClass:new(name)
   local player = {}
