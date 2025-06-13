@@ -121,7 +121,7 @@ function LocationClass:hasEmptySlot(player)
   return false
 end
 
--- Add a Card to a Location
+-- Add a Card to a Locationw
 function LocationClass:addCard(player, card, slotIndex)
   if slotIndex then
     -- Validate slotIndex

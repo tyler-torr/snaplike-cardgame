@@ -1,7 +1,7 @@
 -- conf.lua
 
 require "constants"
-
+w
 
 function love.conf(game)
   game.window.title = "Fight of Titans"

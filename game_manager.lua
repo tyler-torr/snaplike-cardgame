@@ -72,7 +72,7 @@ function GameManagerClass:update()
     end
   end
 end
-
+w
 function GameManagerClass:draw()
   -- Draw Board
   self.board:draw()
